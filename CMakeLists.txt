@@ -9,11 +9,37 @@ cmake_minimum_required(VERSION 3.15...3.27)
 option(BUILD_PYTHON_BINDING "Build Python Binding" off)
 
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
 set(CMAKE_CXX_STANDARD 17)
 
-link_libraries(booster_robotics_sdk.a fastrtps fastcdr libfoonathan_memory-0.7.3.a)
+execute_process(
+    COMMAND uname -m
+    OUTPUT_VARIABLE MACHINE_TYPE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+string(FIND "${MACHINE_TYPE}" "x86_64" IS_X86_64)
+
+
+add_library(booster_sdk STATIC IMPORTED)
+target_include_directories(booster_sdk INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set_target_properties(booster_sdk PROPERTIES
+    CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+target_compile_features(booster_sdk INTERFACE cxx_std_17)
+
+if(NOT IS_X86_64 EQUAL -1)
+    message(STATUS "This machine's cpu architecture is x86_64")
+    set_target_properties(booster_sdk PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/lib/x86_64/libbooster_robotics_sdk.a
+    )
+else()
+    message(STATUS "This machine's cpu architecture is arm")
+    set_target_properties(booster_sdk PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/lib/aarch64/libbooster_robotics_sdk.a
+    )
+endif()
+
+target_link_libraries(booster_sdk INTERFACE fastrtps fastcdr libfoonathan_memory-0.7.3.a)
 
 add_executable(b1_loco_example_client example/high_level/b1_loco_example_client.cpp)
 add_executable(b1_arm_sdk_example_client example/high_level/b1_arm_sdk_example.cpp)
@@ -26,7 +52,17 @@ add_executable(b1_7dof_arm_low_sdk_example example/low_level/b1_7dof_arm_low_sdk
 add_executable(odometer_example example/low_level/odometer_example.cpp)
 
 
-include_directories(BEFORE $(PROJECT_SOURCE_DIR)/include)
+
+target_link_libraries(b1_loco_example_client PUBLIC booster_sdk)
+target_link_libraries(b1_arm_sdk_example_client PUBLIC booster_sdk)
+target_link_libraries(b1_7dof_arm_sdk_example_client PUBLIC booster_sdk)
+target_link_libraries(b1_low_level_publisher PUBLIC booster_sdk)
+target_link_libraries(b1_low_level_subscriber PUBLIC booster_sdk)
+target_link_libraries(low_level_hand_data_subscriber PUBLIC booster_sdk)
+target_link_libraries(b1_low_sdk_example PUBLIC booster_sdk)
+target_link_libraries(b1_7dof_arm_low_sdk_example PUBLIC booster_sdk)
+target_link_libraries(odometer_example PUBLIC booster_sdk)
+
 
 if(BUILD_PYTHON_BINDING)
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
