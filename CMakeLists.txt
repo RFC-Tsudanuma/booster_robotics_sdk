@@ -7,7 +7,7 @@ project(
 cmake_minimum_required(VERSION 3.15...3.27)
 
 option(BUILD_PYTHON_BINDING "Build Python Binding" off)
-
+option(BUILD_SDK_EXAMPLES "Build example programs" off)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -41,27 +41,28 @@ endif()
 
 target_link_libraries(booster_sdk INTERFACE fastrtps fastcdr libfoonathan_memory-0.7.3.a)
 
-add_executable(b1_loco_example_client example/high_level/b1_loco_example_client.cpp)
-add_executable(b1_arm_sdk_example_client example/high_level/b1_arm_sdk_example.cpp)
-add_executable(b1_7dof_arm_sdk_example_client example/high_level/b1_7dof_arm_sdk_example.cpp)
-add_executable(b1_low_level_publisher example/low_level/low_level_publisher.cpp)
-add_executable(b1_low_level_subscriber example/low_level/low_level_subscriber.cpp)
-add_executable(low_level_hand_data_subscriber example/low_level/low_level_hand_data_subscriber.cpp)
-add_executable(b1_low_sdk_example example/low_level/b1_low_sdk_example.cpp)
-add_executable(b1_7dof_arm_low_sdk_example example/low_level/b1_7dof_arm_low_sdk_example.cpp)
-add_executable(odometer_example example/low_level/odometer_example.cpp)
 
+if(BUILD_SDK_EXAMPLES)
+    add_executable(b1_loco_example_client example/high_level/b1_loco_example_client.cpp)
+    add_executable(b1_arm_sdk_example_client example/high_level/b1_arm_sdk_example.cpp)
+    add_executable(b1_7dof_arm_sdk_example_client example/high_level/b1_7dof_arm_sdk_example.cpp)
+    add_executable(b1_low_level_publisher example/low_level/low_level_publisher.cpp)
+    add_executable(b1_low_level_subscriber example/low_level/low_level_subscriber.cpp)
+    add_executable(low_level_hand_data_subscriber example/low_level/low_level_hand_data_subscriber.cpp)
+    add_executable(b1_low_sdk_example example/low_level/b1_low_sdk_example.cpp)
+    add_executable(b1_7dof_arm_low_sdk_example example/low_level/b1_7dof_arm_low_sdk_example.cpp)
+    add_executable(odometer_example example/low_level/odometer_example.cpp)
 
-
-target_link_libraries(b1_loco_example_client PUBLIC booster_sdk)
-target_link_libraries(b1_arm_sdk_example_client PUBLIC booster_sdk)
-target_link_libraries(b1_7dof_arm_sdk_example_client PUBLIC booster_sdk)
-target_link_libraries(b1_low_level_publisher PUBLIC booster_sdk)
-target_link_libraries(b1_low_level_subscriber PUBLIC booster_sdk)
-target_link_libraries(low_level_hand_data_subscriber PUBLIC booster_sdk)
-target_link_libraries(b1_low_sdk_example PUBLIC booster_sdk)
-target_link_libraries(b1_7dof_arm_low_sdk_example PUBLIC booster_sdk)
-target_link_libraries(odometer_example PUBLIC booster_sdk)
+    target_link_libraries(b1_loco_example_client PUBLIC booster_sdk)
+    target_link_libraries(b1_arm_sdk_example_client PUBLIC booster_sdk)
+    target_link_libraries(b1_7dof_arm_sdk_example_client PUBLIC booster_sdk)
+    target_link_libraries(b1_low_level_publisher PUBLIC booster_sdk)
+    target_link_libraries(b1_low_level_subscriber PUBLIC booster_sdk)
+    target_link_libraries(low_level_hand_data_subscriber PUBLIC booster_sdk)
+    target_link_libraries(b1_low_sdk_example PUBLIC booster_sdk)
+    target_link_libraries(b1_7dof_arm_low_sdk_example PUBLIC booster_sdk)
+    target_link_libraries(odometer_example PUBLIC booster_sdk)
+endif()
 
 
 if(BUILD_PYTHON_BINDING)
