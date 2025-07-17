@@ -20,7 +20,7 @@ execute_process(
 string(FIND "${MACHINE_TYPE}" "x86_64" IS_X86_64)
 
 
-add_library(booster_sdk STATIC IMPORTED)
+add_library(booster_sdk STATIC IMPORTED GLOBAL)
 target_include_directories(booster_sdk INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set_target_properties(booster_sdk PROPERTIES
     CMAKE_POSITION_INDEPENDENT_CODE ON)
